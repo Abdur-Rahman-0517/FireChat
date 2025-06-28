@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FireChat Messenger</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -18,17 +20,16 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            padding: 20px;
             overflow: hidden;
-            overscroll-behavior: contain;
-            touch-action: pan-y;
         }
 
         /* App Container */
         #app-container {
             width: 100%;
-            height: 100vh;
-            max-width: 1200px;
+            max-width: 1000px;
+            height: 90vh;
             display: flex;
             background-color: rgba(255, 255, 255, 0.05);
             border-radius: 20px;
@@ -43,46 +44,46 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            height: 100vh;
             width: 100%;
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             position: absolute;
             top: 0;
             left: 0;
             z-index: 1000;
+            height: 100vh;
             animation: fadeOut 1s ease-in-out 3s forwards;
         }
 
         #intro-page h1 {
-            font-size: 4rem;
+            font-size: 3.5rem;
             color: #fff;
             text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
             animation: zoomIn 1s ease-in-out;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         #intro-page p {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: rgba(255, 255, 255, 0.8);
-            margin-top: 10px;
+            margin-top: 5px;
             animation: fadeIn 1s ease-in-out;
         }
 
         .intro-logo {
-            width: 150px;
-            height: 150px;
+            width: 130px;
+            height: 130px;
             background: linear-gradient(135deg, #4facfe, #00f2fe);
             border-radius: 30%;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             animation: float 3s ease-in-out infinite;
         }
 
         .intro-logo i {
-            font-size: 70px;
+            font-size: 60px;
             color: white;
         }
 
@@ -103,7 +104,7 @@
 
         @keyframes float {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-15px); }
             100% { transform: translateY(0px); }
         }
 
@@ -114,13 +115,13 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            height: 100vh;
             width: 100%;
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             position: absolute;
             top: 0;
             left: 0;
             z-index: 999;
+            height: 100vh;
             animation: fadeIn 0.5s ease-in-out;
         }
 
@@ -128,28 +129,28 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 40px;
+            padding: 35px;
             width: 90%;
-            max-width: 400px;
+            max-width: 380px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         #auth-page h2 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             color: #fff;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             font-weight: 600;
         }
 
         .input-group {
             position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         #auth-page input {
-            padding: 15px 20px 15px 50px;
-            font-size: 1rem;
+            padding: 14px 20px 14px 50px;
+            font-size: 0.95rem;
             border: none;
             border-radius: 50px;
             outline: none;
@@ -177,8 +178,8 @@
         }
 
         #auth-page button {
-            padding: 15px;
-            font-size: 1.1rem;
+            padding: 14px;
+            font-size: 1rem;
             background: linear-gradient(135deg, #4facfe, #00f2fe);
             color: white;
             border: none;
@@ -196,7 +197,7 @@
         }
 
         #toggle-auth {
-            margin-top: 20px;
+            margin-top: 18px;
             color: rgba(255, 255, 255, 0.8);
             cursor: pointer;
             text-decoration: none;
@@ -210,9 +211,9 @@
         }
 
         #continue-as {
-            margin-top: 20px;
-            padding: 15px;
-            font-size: 1rem;
+            margin-top: 18px;
+            padding: 14px;
+            font-size: 0.95rem;
             background: rgba(255, 255, 255, 0.1);
             color: white;
             border: none;
@@ -220,6 +221,10 @@
             cursor: pointer;
             width: 100%;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         #continue-as:hover {
@@ -227,16 +232,36 @@
             transform: translateY(-3px);
         }
 
+        .continue-as-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
         /* Profile picture preview */
         #profile-pic-preview {
-            width: 80px;
-            height: 80px;
+            width: 75px;
+            height: 75px;
             border-radius: 50%;
             margin: 10px auto;
             background-size: cover;
             background-position: center;
             border: 2px solid rgba(255, 255, 255, 0.3);
             display: none;
+        }
+
+        /* Verification badge */
+        .verified-badge {
+            color: #1da1f2;
+            margin-left: 5px;
+            font-size: 0.9rem;
         }
 
         /* Chat Menu Page Styles */
@@ -252,7 +277,7 @@
         }
 
         .menu-header {
-            padding: 20px;
+            padding: 18px;
             background: rgba(35, 35, 55, 0.95);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
@@ -261,7 +286,7 @@
         }
 
         .menu-header h2 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             color: white;
             font-weight: 600;
         }
@@ -269,144 +294,10 @@
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .user-name {
-            color: white;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .logout-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: rgba(255, 255, 255, 0.8);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.2rem;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255, 80, 80, 0.2);
-            color: white;
-        }
-
-        #user-list {
-            list-style: none;
-            padding: 20px;
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-        }
-
-        #user-list li {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        #user-list li:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
-        }
-
-        #user-list img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .user-details {
-            flex: 1;
-        }
-
-        .user-details h3 {
-            color: white;
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .user-details p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.9rem;
-        }
-
-        .user-status {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
-        .online-dot {
-            width: 10px;
-            height: 10px;
-            background-color: #00e676;
-            border-radius: 50%;
-            margin-bottom: 5px;
-        }
-
-        .last-seen {
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.8rem;
-        }
-
-        /* Main Chat Page Styles */
-        #main-content {
-            display: none;
-            flex-direction: column;
-            width: 100%;
-            height: 100vh;
-            animation: fadeIn 0.5s ease-in-out;
-            background: rgba(30, 30, 45, 0.95);
-        }
-
-        #chat-header {
-            width: 100%;
-            background: rgba(35, 35, 55, 0.95);
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .chat-partner {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .chat-partner-avatar {
             width: 45px;
             height: 45px;
             border-radius: 50%;
@@ -420,28 +311,18 @@
             background-position: center;
         }
 
-        .partner-info h3 {
+        .user-name {
             color: white;
-            font-size: 1.2rem;
-            margin-bottom: 3px;
+            font-weight: 600;
+            font-size: 1rem;
         }
 
-        .partner-info p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.9rem;
-        }
-
-        .chat-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .chat-action-btn {
+        .logout-btn {
             background: rgba(255, 255, 255, 0.1);
             border: none;
             color: rgba(255, 255, 255, 0.8);
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -451,6 +332,242 @@
             font-size: 1.1rem;
         }
 
+        .logout-btn:hover {
+            background: rgba(255, 80, 80, 0.2);
+            color: white;
+        }
+
+        .menu-tabs {
+            display: flex;
+            padding: 0 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-tab {
+            padding: 12px 0;
+            margin-right: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .menu-tab.active {
+            color: white;
+        }
+
+        .menu-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 3px;
+        }
+
+        #user-list {
+            list-style: none;
+            padding: 18px;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        #user-list li {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        #user-list li:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-details h3 {
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-details p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+
+        .user-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .online-dot {
+            width: 9px;
+            height: 9px;
+            background-color: #00e676;
+            border-radius: 50%;
+            margin-bottom: 4px;
+        }
+
+        .last-seen {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.75rem;
+        }
+
+        .request-status {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .status-accepted {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .status-rejected {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .action-button {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-send {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+        }
+
+        .btn-accept {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            margin-right: 8px;
+        }
+
+        .btn-reject {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        /* Request card */
+        .request-card {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .request-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Main Chat Page Styles */
+        #main-content {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            animation: fadeIn 0.5s ease-in-out;
+            background: rgba(30, 30, 45, 0.95);
+        }
+
+        #chat-header {
+            width: 100%;
+            background: rgba(35, 35, 55, 0.95);
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-partner {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .chat-partner-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .partner-info h3 {
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+        }
+
+        .partner-info p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+        }
+
         .chat-action-btn:hover {
             background: rgba(255, 255, 255, 0.2);
             color: white;
@@ -458,12 +575,12 @@
 
         #chat-box {
             width: 100%;
-            height: calc(100vh - 140px);
+            height: calc(100% - 130px);
             overflow-y: auto;
-            padding: 20px;
+            padding: 18px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 14px;
             flex-grow: 1;
             overscroll-behavior: contain;
         }
@@ -471,9 +588,9 @@
         .message {
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            padding: 15px 20px;
+            padding: 14px 18px;
             max-width: 80%;
-            font-size: 16px;
+            font-size: 15px;
             color: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             word-wrap: break-word;
@@ -494,21 +611,21 @@
         }
 
         .message-content {
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             line-height: 1.5;
         }
 
         .timestamp {
-            font-size: 12px;
+            font-size: 11px;
             color: rgba(255, 255, 255, 0.6);
             text-align: right;
         }
 
         .date-label {
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
             color: rgba(255, 255, 255, 0.4);
-            margin: 20px 0;
+            margin: 18px 0;
             position: relative;
         }
 
@@ -533,9 +650,10 @@
         .message-input-container {
             display: flex;
             width: 100%;
-            padding: 15px 20px;
+            padding: 14px 18px;
             background: rgba(35, 35, 55, 0.95);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
         }
 
         .input-wrapper {
@@ -543,28 +661,28 @@
             flex-grow: 1;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 30px;
-            padding: 5px 15px;
+            padding: 5px 14px;
             align-items: center;
         }
 
         .input-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .action-btn {
             background: transparent;
             border: none;
             color: rgba(255, 255, 255, 0.7);
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .action-btn:hover {
@@ -574,8 +692,8 @@
 
         #message {
             flex-grow: 1;
-            padding: 12px;
-            font-size: 16px;
+            padding: 11px;
+            font-size: 15px;
             border: none;
             outline: none;
             background: transparent;
@@ -587,8 +705,8 @@
         }
 
         #sendBtn {
-            padding: 12px 20px;
-            font-size: 16px;
+            padding: 11px 18px;
+            font-size: 15px;
             background: linear-gradient(135deg, #4facfe, #00f2fe);
             color: white;
             border: none;
@@ -598,9 +716,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.2rem;
-            width: 45px;
-            height: 45px;
+            font-size: 1.1rem;
+            width: 42px;
+            height: 42px;
+            margin-left: 10px;
         }
 
         #sendBtn:hover {
@@ -614,7 +733,7 @@
             right: 20px;
             background: rgba(0, 0, 0, 0.8);
             color: #fff;
-            padding: 15px 25px;
+            padding: 14px 22px;
             border-radius: 10px;
             display: none;
             z-index: 1001;
@@ -628,24 +747,24 @@
         .typing-indicator {
             display: none;
             align-items: center;
-            padding: 10px 15px;
+            padding: 9px 14px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            margin: 5px 0 10px;
+            margin: 5px 0 9px;
             align-self: flex-start;
             width: auto;
-            max-width: 120px;
+            max-width: 110px;
             animation: fadeIn 0.3s ease;
         }
 
         .typing-dots {
             display: flex;
-            gap: 5px;
+            gap: 4px;
         }
 
         .typing-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background: rgba(255, 255, 255, 0.6);
             border-radius: 50%;
             animation: typing 1.5s infinite;
@@ -661,7 +780,54 @@
 
         @keyframes typing {
             0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-5px); }
+            30% { transform: translateY(-4px); }
+        }
+
+        /* Emoji Picker */
+        #emoji-picker {
+            position: absolute;
+            bottom: 65px;
+            right: 20px;
+            background: rgba(50, 50, 70, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 14px;
+            width: 280px;
+            height: 230px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .emoji-category {
+            margin-bottom: 14px;
+        }
+
+        .emoji-category h4 {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            margin-bottom: 9px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 7px;
+        }
+
+        .emoji {
+            font-size: 1.4rem;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .emoji:hover {
+            transform: scale(1.3);
         }
 
         /* Keyframes for Animations */
@@ -682,35 +848,54 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            #app-container {
+                height: 95vh;
+            }
+            
             .auth-card {
-                padding: 30px 20px;
+                padding: 25px 18px;
             }
             
             #intro-page h1 {
-                font-size: 2.5rem;
+                font-size: 2.2rem;
             }
             
             .intro-logo {
-                width: 120px;
-                height: 120px;
+                width: 100px;
+                height: 100px;
             }
             
             .intro-logo i {
-                font-size: 50px;
+                font-size: 45px;
             }
             
             .menu-header h2 {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
             }
             
             .user-avatar {
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
             }
             
             .user-name {
-                font-size: 1rem;
+                font-size: 0.9rem;
+            }
+            
+            #continue-as {
+                padding: 11px;
+                font-size: 0.85rem;
+            }
+            
+            #emoji-picker {
+                width: 260px;
+                height: 210px;
+                right: 10px;
+            }
+            
+            .emoji-grid {
+                grid-template-columns: repeat(7, 1fr);
             }
         }
     </style>
@@ -737,23 +922,30 @@
                 
                 <div class="input-group">
                     <i class="fas fa-phone input-icon"></i>
-                    <input type="text" id="phone" placeholder="Phone Number">
+                    <input type="text" id="phone" placeholder="Phone Number" autocomplete="off">
                 </div>
                 <div class="input-group">
                     <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="password" placeholder="Password">
+                    <input type="password" id="password" placeholder="Password" autocomplete="off">
                 </div>
                 <div class="input-group" style="display: none;">
                     <i class="fas fa-user input-icon"></i>
-                    <input type="text" id="name" placeholder="Full Name">
+                    <input type="text" id="name" placeholder="Full Name" autocomplete="off">
                 </div>
                 <div class="input-group" style="display: none;">
                     <i class="fas fa-image input-icon"></i>
                     <input type="file" id="profile-pic" placeholder="Profile Picture" accept="image/*">
                 </div>
+                <div class="input-group" style="display: none;">
+                    <i class="fas fa-shield-alt input-icon"></i>
+                    <input type="text" id="verification" placeholder="Verification Code (Optional)" autocomplete="off">
+                </div>
                 <button id="auth-button">Sign In</button>
                 <p id="toggle-auth">Don't have an account? Sign Up</p>
-                <button id="continue-as" style="display: none;">Continue as <span id="saved-username"></span></button>
+                <button id="continue-as" style="display: none;">
+                    <div class="continue-as-avatar" id="saved-user-avatar"></div>
+                    <span>Continue as <span id="saved-username"></span></span>
+                </button>
             </div>
         </div>
 
@@ -769,6 +961,12 @@
                     </button>
                 </div>
             </div>
+            
+            <div class="menu-tabs">
+                <div class="menu-tab active" data-tab="contacts">Contacts</div>
+                <div class="menu-tab" data-tab="requests">Requests</div>
+            </div>
+            
             <ul id="user-list">
                 <!-- Users will be populated dynamically -->
             </ul>
@@ -787,20 +985,39 @@
                         <p id="recipient-status">Online</p>
                     </div>
                 </div>
+                <div class="chat-actions">
+                    <!-- Only the back button remains -->
+                </div>
             </div>
             <div id="chat-box">
                 <!-- Messages will be populated here -->
             </div>
             <div class="message-input-container">
+                <div id="emoji-picker">
+                    <div class="emoji-category">
+                        <h4>Smileys & People</h4>
+                        <div class="emoji-grid" id="smileys-people">
+                            <!-- Populated with JS -->
+                        </div>
+                    </div>
+                    <div class="emoji-category">
+                        <h4>Animals & Nature</h4>
+                        <div class="emoji-grid" id="animals-nature">
+                            <!-- Populated with JS -->
+                        </div>
+                    </div>
+                    <div class="emoji-category">
+                        <h4>Food & Drink</h4>
+                        <div class="emoji-grid" id="food-drink">
+                            <!-- Populated with JS -->
+                        </div>
+                    </div>
+                </div>
                 <div class="input-wrapper">
-                    <button class="action-btn">
-                        <i class="fas fa-paperclip"></i>
-                    </button>
-                    <input type="text" id="message" placeholder="Type a message...">
-                    <button class="action-btn">
+                    <button class="action-btn" id="emoji-btn">
                         <i class="fas fa-smile"></i>
                     </button>
-                    
+                    <input type="text" id="message" placeholder="Type a message..." autocomplete="off">
                 </div>
                 <button id="sendBtn">
                     <i class="fas fa-paper-plane"></i>
@@ -812,12 +1029,8 @@
         <div id="notification"></div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-
     <script>
-        // Your Firebase configuration
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCTsAz5S3wfA-MVf6Cg0fIhgIJpXJVtUeM",
             authDomain: "firechat-1db95.firebaseapp.com",
@@ -832,6 +1045,13 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // Emoji categories
+        const emojiCategories = {
+            "smileys-people": ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🤩", "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬", "🤯", "😳", "🥵", "🥶", "😱", "😨", "😰", "😥", "😓", "🤗", "🤔", "🤭", "🤫", "🤥", "😶", "😐", "😑", "😬", "🙄", "😯", "😦", "😧", "😮", "😲", "🥱", "😴", "🤤", "😪", "😵", "🤐", "🥴", "🤢", "🤮", "🤧", "😷", "🤒", "🤕"],
+            "animals-nature": ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐽", "🐸", "🐵", "🙈", "🙉", "🙊", "🐒", "🐔", "🐧", "🐦", "🐤", "🐣", "🐥", "🦆", "🦅", "🦉", "🦇", "🐺", "🐗", "🐴", "🦄", "🐝", "🐛", "🦋", "🐌", "🐞", "🐜", "🦟", "🦗", "🕷", "🦂", "🐢", "🐍", "🦎", "🦖", "🦕", "🐙", "🦑", "🦐", "🦞", "🦀", "🐡", "🐠", "🐟", "🐬", "🐳", "🐋", "🦈", "🐊", "🐅", "🐆", "🦓", "🦍", "🦧", "🦣", "🐘", "🦛", "🦏", "🐪", "🐫", "🦒", "🦘", "🦬", "🐃", "🐂", "🐄", "🐎", "🐖", "🐏", "🐑", "🦙", "🐐", "🦌", "🐕", "🐩", "🦮", "🐕‍🦺", "🐈", "🐈‍⬛", "🐓", "🦃", "🦚", "🦜", "🦢", "🦩", "🕊", "🐇", "🦝", "🦨", "🦡", "🦫", "🦦", "🦥", "🐁", "🐀", "🐿", "🦔"],
+            "food-drink": ["🍏", "🍎", "🍐", "🍊", "🍋", "🍌", "🍉", "🍇", "🍓", "🫐", "🍈", "🍒", "🍑", "🥭", "🍍", "🥥", "🥝", "🍅", "🍆", "🥑", "🥦", "🥬", "🥒", "🌶", "🫑", "🌽", "🥕", "🫒", "🧄", "🧅", "🥔", "🍠", "🥐", "🥯", "🍞", "🥖", "🥨", "🧀", "🥚", "🍳", "🧈", "🥞", "🧇", "🥓", "🥩", "🍗", "🍖", "🦴", "🌭", "🍔", "🍟", "🍕", "🫓", "🥪", "🥙", "🧆", "🌮", "🌯", "🫔", "🥗", "🥘", "🫕", "🥫", "🍝", "🍜", "🍲", "🍛", "🍣", "🍱", "🥟", "🦪", "🍤", "🍙", "🍚", "🍘", "🍥", "🥠", "🥮", "🍢", "🍡", "🍧", "🍨", "🍦", "🥧", "🧁", "🍰", "🎂", "🍮", "🍭", "🍬", "🍫", "🍿", "🍩", "🍪", "🌰", "🥜", "🍯", "🥛", "🍼", "🫖", "☕", "🍵", "🧃", "🥤", "🧋", "🍶", "🍺", "🍻", "🥂", "🍷", "🥃", "🍸", "🍹", "🧉", "🍾", "🧊"]
+        };
+
         // DOM Elements
         const introPage = document.getElementById('intro-page');
         const authPage = document.getElementById('auth-page');
@@ -842,6 +1062,7 @@
         const toggleAuth = document.getElementById('toggle-auth');
         const continueAsButton = document.getElementById('continue-as');
         const savedUsername = document.getElementById('saved-username');
+        const savedUserAvatar = document.getElementById('saved-user-avatar');
         const backBtn = document.querySelector('.back-btn');
         const sendBtn = document.getElementById('sendBtn');
         const messageInput = document.getElementById('message');
@@ -855,15 +1076,10 @@
         const logoutBtn = document.querySelector('.logout-btn');
         const profilePicInput = document.getElementById('profile-pic');
         const profilePicPreview = document.getElementById('profile-pic-preview');
-        const typingIndicator = document.createElement('div');
-        typingIndicator.className = 'typing-indicator';
-        typingIndicator.innerHTML = `
-            <div class="typing-dots">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            </div>
-        `;
+        const emojiBtn = document.getElementById('emoji-btn');
+        const emojiPicker = document.getElementById('emoji-picker');
+        const menuTabs = document.querySelectorAll('.menu-tab');
+        const verificationInput = document.getElementById('verification').parentElement;
 
         // App State
         let currentUser = null;
@@ -871,6 +1087,7 @@
         let currentRecipient = null;
         let isSignUp = false;
         let unsubscribeMessages = null;
+        let currentTab = 'contacts';
 
         // Show auth page after intro page
         setTimeout(() => {
@@ -899,6 +1116,7 @@
             toggleAuth.textContent = isSignUp ? "Already have an account? Sign In" : "Don't have an account? Sign Up";
             nameInput.style.display = isSignUp ? 'block' : 'none';
             profilePicContainer.style.display = isSignUp ? 'block' : 'none';
+            verificationInput.style.display = isSignUp ? 'block' : 'none';
         });
 
         // Profile picture preview
@@ -915,11 +1133,42 @@
             }
         });
 
+        // Initialize emoji picker
+        function initEmojiPicker() {
+            for (const category in emojiCategories) {
+                const container = document.getElementById(category);
+                container.innerHTML = '';
+                
+                emojiCategories[category].forEach(emoji => {
+                    const emojiEl = document.createElement('div');
+                    emojiEl.className = 'emoji';
+                    emojiEl.textContent = emoji;
+                    emojiEl.addEventListener('click', () => {
+                        messageInput.value += emoji;
+                        messageInput.focus();
+                    });
+                    container.appendChild(emojiEl);
+                });
+            }
+        }
+
+        // Toggle emoji picker
+        emojiBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            emojiPicker.style.display = emojiPicker.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close emoji picker when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!emojiPicker.contains(e.target) && e.target !== emojiBtn) {
+                emojiPicker.style.display = 'none';
+            }
+        });
+
         // Optimize and compress image
         async function optimizeImage(file) {
             return new Promise((resolve, reject) => {
-                // Skip optimization for small files
-                if (file.size < 500 * 1024) { // Less than 500KB
+                if (file.size < 500 * 1024) {
                     const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result);
                     reader.onerror = reject;
@@ -931,11 +1180,9 @@
                 const url = URL.createObjectURL(file);
                 
                 img.onload = () => {
-                    // Create canvas for resizing
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     
-                    // Calculate new dimensions (max 800px on longest side)
                     let width = img.width;
                     let height = img.height;
                     const maxSize = 800;
@@ -955,10 +1202,8 @@
                     canvas.width = width;
                     canvas.height = height;
                     
-                    // Draw and compress image
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Get compressed data URL
                     const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
                     URL.revokeObjectURL(url);
                     resolve(compressedDataUrl);
@@ -969,8 +1214,8 @@
             });
         }
 
-        // Handle Sign Up - Fixed phone validation
-        async function handleSignUp(phone, password, name, profilePic) {
+        // Handle Sign Up
+        async function handleSignUp(phone, password, name, profilePic, verificationCode) {
             try {
                 // Check if user already exists
                 const userDoc = await db.collection('users').doc(phone).get();
@@ -980,15 +1225,18 @@
                 }
                 
                 // Create new user
+                const verification = verificationCode === 'V123' ? { type: "V", verifiedAt: new Date() } : null;
+                
                 await db.collection('users').doc(phone).set({
                     name,
                     password,
                     phone,
                     Pic: profilePic || '',
+                    verification,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
-                return { phone, name, Pic: profilePic };
+                return { phone, name, Pic: profilePic, verification };
             } catch (error) {
                 console.error("Error signing up:", error);
                 throw error;
@@ -1015,12 +1263,27 @@
             }
         }
 
+        // Helper function to update avatar display
+        function updateAvatar(element, user) {
+            element.textContent = '';
+            element.style.backgroundImage = '';
+            element.style.background = '';
+            
+            if (user.Pic) {
+                element.style.backgroundImage = `url(${user.Pic})`;
+            } else {
+                element.style.background = getRandomGradient();
+                element.textContent = user.name.charAt(0).toUpperCase();
+            }
+        }
+
         // Auth button click handler
         authButton.addEventListener('click', async () => {
             const phone = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value.trim();
             const name = document.getElementById('name').value.trim();
             const profilePicFile = document.getElementById('profile-pic').files[0];
+            const verificationCode = document.getElementById('verification').value.trim();
             
             // Validate inputs
             if (!phone || !password || (isSignUp && !name)) {
@@ -1039,11 +1302,10 @@
                     // Handle sign up
                     let profilePic = null;
                     if (profilePicFile) {
-                        // Optimize image if needed
                         profilePic = await optimizeImage(profilePicFile);
                     }
                     
-                    const user = await handleSignUp(phone, password, name, profilePic);
+                    const user = await handleSignUp(phone, password, name, profilePic, verificationCode);
                     
                     // Update UI
                     currentUser = user;
@@ -1056,8 +1318,10 @@
                     // Save to localStorage for auto-login
                     localStorage.setItem('firechat_user', JSON.stringify({
                         phone,
-                        name: currentUser.name,
-                        Pic: currentUser.Pic
+                        name,
+                        Pic: profilePic || '',
+                        password: password,
+                        verification: user.verification
                     }));
                     
                     showNotification("Account created successfully!");
@@ -1084,7 +1348,9 @@
                     localStorage.setItem('firechat_user', JSON.stringify({
                         phone,
                         name: currentUser.name,
-                        Pic: currentUser.Pic
+                        Pic: currentUser.Pic || '',
+                        password: password,
+                        verification: currentUser.verification
                     }));
                     
                     showNotification("Signed in successfully!");
@@ -1102,25 +1368,31 @@
             }
         });
 
-        // Helper function to update avatar display
-        function updateAvatar(element, user) {
-            element.textContent = '';
-            element.style.backgroundImage = '';
-            element.style.background = '';
-            
-            if (user.Pic) {
-                element.style.backgroundImage = `url(${user.Pic})`;
-            } else {
-                element.style.background = getRandomGradient();
-                element.textContent = user.name.charAt(0).toUpperCase();
-            }
+        // Helper function for random gradient
+        function getRandomGradient() {
+            const gradients = [
+                'linear-gradient(135deg, #ff9a9e, #fad0c4)',
+                'linear-gradient(135deg, #a1c4fd, #c2e9fb)',
+                'linear-gradient(135deg, #d4fc79, #96e6a1)',
+                'linear-gradient(135deg, #f6d365, #fda085)',
+                'linear-gradient(135deg, #84fab0, #8fd3f4)'
+            ];
+            return gradients[Math.floor(Math.random() * gradients.length)];
         }
 
         // Auto-login with saved credentials
         const savedUser = JSON.parse(localStorage.getItem('firechat_user'));
         if (savedUser) {
-            continueAsButton.style.display = 'block';
+            continueAsButton.style.display = 'flex';
             savedUsername.textContent = savedUser.name;
+            
+            // Set avatar for continue as button
+            if (savedUser.Pic) {
+                savedUserAvatar.style.backgroundImage = `url(${savedUser.Pic})`;
+            } else {
+                savedUserAvatar.style.background = getRandomGradient();
+                savedUserAvatar.textContent = savedUser.name.charAt(0).toUpperCase();
+            }
             
             continueAsButton.addEventListener('click', async () => {
                 try {
@@ -1137,7 +1409,7 @@
                     
                     currentUserName.textContent = currentUser.name;
                     
-                    showNotification("Signed in successfully!");
+                    showNotification("Welcome back, " + currentUser.name + "!");
                     authPage.style.display = 'none';
                     chatMenuPage.style.display = 'flex';
                     
@@ -1150,12 +1422,192 @@
             });
         }
 
+        // Toggle menu tabs
+        menuTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                menuTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentTab = tab.dataset.tab;
+                loadUserList();
+            });
+        });
+
+        // Send chat request
+        async function sendChatRequest(receiverPhone) {
+            try {
+                // Check if request already exists
+                const existingRequest = await db.collection('chat_requests')
+                    .where('senderId', '==', currentUser.phone)
+                    .where('receiverId', '==', receiverPhone)
+                    .get();
+                
+                if (!existingRequest.empty) {
+                    showNotification("Request already sent");
+                    return;
+                }
+                
+                // Create new request
+                await db.collection('chat_requests').add({
+                    senderId: currentUser.phone,
+                    receiverId: receiverPhone,
+                    status: 'pending',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showNotification("Chat request sent!");
+                loadUserList();
+            } catch (error) {
+                console.error("Error sending chat request:", error);
+                showNotification("Failed to send request.");
+            }
+        }
+
+        // Handle chat request response
+        async function handleChatRequest(requestId, status) {
+            try {
+                const requestRef = db.collection('chat_requests').doc(requestId);
+                await requestRef.update({ status });
+                
+                if (status === 'accepted') {
+                    // Create chat when request is accepted
+                    const requestDoc = await requestRef.get();
+                    const request = requestDoc.data();
+                    
+                    // Check if chat already exists
+                    const chatsQuery = await db.collection('chats')
+                        .where('participants', 'array-contains', currentUser.phone)
+                        .get();
+                    
+                    let chatExists = false;
+                    
+                    chatsQuery.forEach(doc => {
+                        const chat = doc.data();
+                        if (chat.participants.includes(request.senderId)) {
+                            chatExists = true;
+                            currentChatId = doc.id;
+                        }
+                    });
+                    
+                    // Create new chat if doesn't exist
+                    if (!chatExists) {
+                        // Get sender user data
+                        const senderDoc = await db.collection('users').doc(request.senderId).get();
+                        const senderData = senderDoc.data();
+                        
+                        const newChat = {
+                            participants: [currentUser.phone, request.senderId],
+                            names: {
+                                [currentUser.phone]: currentUser.name,
+                                [request.senderId]: senderData.name
+                            },
+                            verifiedChat: currentUser.verification?.type === "V" && senderData.verification?.type === "V",
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            lastMessage: '',
+                            lastMessageTime: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+                        
+                        const chatRef = await db.collection('chats').add(newChat);
+                        currentChatId = chatRef.id;
+                    }
+                    
+                    showNotification("Chat request accepted!");
+                } else {
+                    showNotification("Chat request rejected");
+                }
+                
+                loadUserList();
+            } catch (error) {
+                console.error("Error handling chat request:", error);
+                showNotification("Failed to handle request.");
+            }
+        }
+
         // Load user list from Firestore
         async function loadUserList() {
             try {
                 const usersSnapshot = await db.collection('users').get();
                 userList.innerHTML = '';
                 
+                // Get all chat requests involving current user
+                const sentRequests = await db.collection('chat_requests').where('senderId', '==', currentUser.phone).get();
+                const receivedRequests = await db.collection('chat_requests').where('receiverId', '==', currentUser.phone).get();
+                
+                const allRequests = [];
+                sentRequests.forEach(doc => allRequests.push({ id: doc.id, ...doc.data() }));
+                receivedRequests.forEach(doc => allRequests.push({ id: doc.id, ...doc.data() }));
+                
+                if (currentTab === 'requests') {
+                    // Show pending requests
+                    const pendingRequests = allRequests.filter(req => 
+                        req.receiverId === currentUser.phone && req.status === 'pending'
+                    );
+                    
+                    if (pendingRequests.length === 0) {
+                        userList.innerHTML = '<li class="no-requests">No pending requests</li>';
+                    } else {
+                        for (const request of pendingRequests) {
+                            const senderDoc = await db.collection('users').doc(request.senderId).get();
+                            const senderData = senderDoc.data();
+                            
+                            const li = document.createElement('li');
+                            li.className = 'request-card';
+                            
+                            // Create avatar
+                            const avatarDiv = document.createElement('div');
+                            avatarDiv.className = 'user-avatar';
+                            if (senderData.Pic) {
+                                avatarDiv.style.backgroundImage = `url(${senderData.Pic})`;
+                            } else {
+                                avatarDiv.style.background = getRandomGradient();
+                                avatarDiv.textContent = senderData.name.charAt(0).toUpperCase();
+                            }
+                            
+                            // Create user details
+                            const userDetailsDiv = document.createElement('div');
+                            userDetailsDiv.className = 'user-details';
+                            userDetailsDiv.innerHTML = `
+                                <h3>${senderData.name} 
+                                    ${senderData.verification?.type === 'V' 
+                                        ? '<span class="verified-badge"><i class="fas fa-check-circle"></i></span>' 
+                                        : ''}
+                                </h3>
+                                <p>${senderData.phone}</p>
+                            `;
+                            
+                            // Create request actions
+                            const actionsDiv = document.createElement('div');
+                            actionsDiv.className = 'request-actions';
+                            actionsDiv.innerHTML = `
+                                <button class="action-button btn-accept" data-action="accept" data-request="${request.id}">
+                                    <i class="fas fa-check"></i> Accept
+                                </button>
+                                <button class="action-button btn-reject" data-action="reject" data-request="${request.id}">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                            `;
+                            
+                            // Append elements
+                            li.appendChild(avatarDiv);
+                            li.appendChild(userDetailsDiv);
+                            li.appendChild(actionsDiv);
+                            
+                            userList.appendChild(li);
+                        }
+                    }
+                    
+                    // Add event listeners to action buttons
+                    document.querySelectorAll('.action-button').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            const action = e.target.dataset.action;
+                            const requestId = e.target.dataset.request;
+                            handleChatRequest(requestId, action === 'accept' ? 'accepted' : 'rejected');
+                        });
+                    });
+                    
+                    return;
+                }
+                
+                // Show contacts
                 usersSnapshot.forEach(doc => {
                     const user = doc.data();
                     
@@ -1178,23 +1630,59 @@
                     const userDetailsDiv = document.createElement('div');
                     userDetailsDiv.className = 'user-details';
                     userDetailsDiv.innerHTML = `
-                        <h3>${user.name}</h3>
+                        <h3>${user.name} 
+                            ${user.verification?.type === 'V' 
+                                ? '<span class="verified-badge"><i class="fas fa-check-circle"></i></span>' 
+                                : ''}
+                        </h3>
                         <p>${user.phone}</p>
                     `;
                     
                     // Create user status
                     const userStatusDiv = document.createElement('div');
                     userStatusDiv.className = 'user-status';
-                    userStatusDiv.innerHTML = `
-                        <span class="last-seen">Offline</span>
-                    `;
+                    
+                    // Find request status for this user
+                    const request = allRequests.find(req => 
+                        (req.senderId === currentUser.phone && req.receiverId === user.phone) ||
+                        (req.senderId === user.phone && req.receiverId === currentUser.phone)
+                    );
+                    
+                    if (request) {
+                        if (request.status === 'accepted') {
+                            li.addEventListener('click', () => startChat(user.phone, user));
+                            userStatusDiv.innerHTML = `
+                                <span class="request-status status-accepted">Chat Active</span>
+                            `;
+                        } else if (request.senderId === currentUser.phone) {
+                            userStatusDiv.innerHTML = `
+                                <span class="request-status status-pending">Request Sent</span>
+                            `;
+                        } else {
+                            userStatusDiv.innerHTML = `
+                                <span class="request-status status-pending">Request Received</span>
+                            `;
+                        }
+                    } else {
+                        const sendButton = document.createElement('button');
+                        sendButton.className = 'action-button btn-send';
+                        sendButton.innerHTML = '<i class="fas fa-user-plus"></i> Send Request';
+                        sendButton.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            sendChatRequest(user.phone);
+                        });
+                        userStatusDiv.appendChild(sendButton);
+                    }
                     
                     // Append elements
                     li.appendChild(avatarDiv);
                     li.appendChild(userDetailsDiv);
                     li.appendChild(userStatusDiv);
                     
-                    li.addEventListener('click', () => startChat(user.phone, user));
+                    if (!request || request.status === 'accepted') {
+                        li.addEventListener('click', () => startChat(user.phone, user));
+                    }
+                    
                     userList.appendChild(li);
                 });
                 
@@ -1207,23 +1695,18 @@
             }
         }
 
-        // Helper function for random gradient
-        function getRandomGradient() {
-            const gradients = [
-                'linear-gradient(135deg, #ff9a9e, #fad0c4)',
-                'linear-gradient(135deg, #a1c4fd, #c2e9fb)',
-                'linear-gradient(135deg, #d4fc79, #96e6a1)',
-                'linear-gradient(135deg, #f6d365, #fda085)',
-                'linear-gradient(135deg, #84fab0, #8fd3f4)'
-            ];
-            return gradients[Math.floor(Math.random() * gradients.length)];
-        }
-
         // Start a chat with another user
         async function startChat(recipientPhone, recipientData) {
             try {
                 currentRecipient = recipientData;
-                recipientName.textContent = currentRecipient.name;
+                
+                // Set recipient name with verification badge
+                recipientName.innerHTML = `
+                    ${currentRecipient.name} 
+                    ${currentRecipient.verification?.type === 'V' 
+                        ? '<span class="verified-badge"><i class="fas fa-check-circle"></i></span>' 
+                        : ''}
+                `;
                 
                 // Set recipient avatar
                 recipientAvatar.textContent = '';
@@ -1251,21 +1734,32 @@
                     }
                 });
                 
-                // Create new chat if doesn't exist
                 if (!chatExists) {
-                    const newChat = {
-                        participants: [currentUser.phone, recipientPhone],
-                        names: {
-                            [currentUser.phone]: currentUser.name,
-                            [recipientPhone]: currentRecipient.name
-                        },
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastMessage: '',
-                        lastMessageTime: firebase.firestore.FieldValue.serverTimestamp()
-                    };
+                    // Check if request exists and is accepted
+                    const requestQuery = await db.collection('chat_requests')
+                        .where('senderId', 'in', [currentUser.phone, recipientPhone])
+                        .where('receiverId', 'in', [currentUser.phone, recipientPhone])
+                        .where('status', '==', 'accepted')
+                        .get();
                     
-                    const chatRef = await db.collection('chats').add(newChat);
-                    currentChatId = chatRef.id;
+                    if (!requestQuery.empty) {
+                        const request = requestQuery.docs[0].data();
+                        const chatRef = await db.collection('chats').add({
+                            participants: [currentUser.phone, recipientPhone],
+                            names: {
+                                [currentUser.phone]: currentUser.name,
+                                [recipientPhone]: currentRecipient.name
+                            },
+                            verifiedChat: currentUser.verification?.type === "V" && currentRecipient.verification?.type === "V",
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            lastMessage: '',
+                            lastMessageTime: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        currentChatId = chatRef.id;
+                    } else {
+                        showNotification("You need to send a chat request first");
+                        return;
+                    }
                 }
                 
                 // Load messages
@@ -1409,8 +1903,13 @@
             showNotification("You've been signed out");
         });
 
-        // Initialize typing indicator
-        chatBox.appendChild(typingIndicator);
+        // Initialize the app
+        function initApp() {
+            initEmojiPicker();
+        }
+
+        // Initialize when the page loads
+        window.addEventListener('load', initApp);
     </script>
 </body>
 </html>
