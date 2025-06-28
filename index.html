@@ -220,28 +220,11 @@
             cursor: pointer;
             width: 100%;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
 
         #continue-as:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-3px);
-        }
-
-        .continue-as-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
         }
 
         /* Profile picture preview */
@@ -729,11 +712,6 @@
             .user-name {
                 font-size: 1rem;
             }
-            
-            #continue-as {
-                padding: 12px;
-                font-size: 0.9rem;
-            }
         }
     </style>
 </head>
@@ -775,10 +753,7 @@
                 </div>
                 <button id="auth-button">Sign In</button>
                 <p id="toggle-auth">Don't have an account? Sign Up</p>
-                <button id="continue-as" style="display: none;">
-                    <div class="continue-as-avatar" id="saved-user-avatar"></div>
-                    <span>Continue as <span id="saved-username"></span></span>
-                </button>
+                <button id="continue-as" style="display: none;">Continue as <span id="saved-username"></span></button>
             </div>
         </div>
 
@@ -796,38 +771,6 @@
             </div>
             <ul id="user-list">
                 <!-- Users will be populated dynamically -->
-                <li>
-                    <div class="user-avatar" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);">S</div>
-                    <div class="user-details">
-                        <h3>Sarah Johnson</h3>
-                        <p>+1 (555) 123-4567</p>
-                    </div>
-                    <div class="user-status">
-                        <div class="online-dot"></div>
-                        <span class="last-seen">Online</span>
-                    </div>
-                </li>
-                <li>
-                    <div class="user-avatar" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);">M</div>
-                    <div class="user-details">
-                        <h3>Mike Thompson</h3>
-                        <p>+1 (555) 987-6543</p>
-                    </div>
-                    <div class="user-status">
-                        <span class="last-seen">2h ago</span>
-                    </div>
-                </li>
-                <li>
-                    <div class="user-avatar" style="background: linear-gradient(135deg, #d4fc79, #96e6a1);">E</div>
-                    <div class="user-details">
-                        <h3>Emma Davis</h3>
-                        <p>+1 (555) 456-7890</p>
-                    </div>
-                    <div class="user-status">
-                        <div class="online-dot"></div>
-                        <span class="last-seen">Online</span>
-                    </div>
-                </li>
             </ul>
         </div>
 
@@ -844,44 +787,9 @@
                         <p id="recipient-status">Online</p>
                     </div>
                 </div>
-                <div class="chat-actions">
-                    <button class="chat-action-btn">
-                        <i class="fas fa-phone-alt"></i>
-                    </button>
-                    <button class="chat-action-btn">
-                        <i class="fas fa-video"></i>
-                    </button>
-                    <button class="chat-action-btn">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
-                </div>
             </div>
             <div id="chat-box">
-                <div class="date-label">Today</div>
-                <div class="message received">
-                    <div class="message-content">Hey there! How are you doing today?</div>
-                    <div class="timestamp">10:15 AM</div>
-                </div>
-                <div class="message sent">
-                    <div class="message-content">I'm doing great! Just finished the FireChat app with the new Continue As feature.</div>
-                    <div class="timestamp">10:16 AM</div>
-                </div>
-                <div class="message received">
-                    <div class="message-content">That's awesome! How does the Continue As feature work?</div>
-                    <div class="timestamp">10:17 AM</div>
-                </div>
-                <div class="message sent">
-                    <div class="message-content">It remembers your login so you can quickly resume your session. Very convenient!</div>
-                    <div class="timestamp">10:18 AM</div>
-                </div>
-                <div class="message received">
-                    <div class="message-content">Nice! Looking forward to trying it out. When will it be ready?</div>
-                    <div class="timestamp">10:20 AM</div>
-                </div>
-                <div class="message sent">
-                    <div class="message-content">It's already implemented and working perfectly!</div>
-                    <div class="timestamp">10:21 AM</div>
-                </div>
+                <!-- Messages will be populated here -->
             </div>
             <div class="message-input-container">
                 <div class="input-wrapper">
@@ -892,9 +800,7 @@
                     <button class="action-btn">
                         <i class="fas fa-smile"></i>
                     </button>
-                    <button class="action-btn">
-                        <i class="fas fa-camera"></i>
-                    </button>
+                    
                 </div>
                 <button id="sendBtn">
                     <i class="fas fa-paper-plane"></i>
@@ -936,7 +842,6 @@
         const toggleAuth = document.getElementById('toggle-auth');
         const continueAsButton = document.getElementById('continue-as');
         const savedUsername = document.getElementById('saved-username');
-        const savedUserAvatar = document.getElementById('saved-user-avatar');
         const backBtn = document.querySelector('.back-btn');
         const sendBtn = document.getElementById('sendBtn');
         const messageInput = document.getElementById('message');
@@ -1064,7 +969,7 @@
             });
         }
 
-        // Handle Sign Up
+        // Handle Sign Up - Fixed phone validation
         async function handleSignUp(phone, password, name, profilePic) {
             try {
                 // Check if user already exists
@@ -1110,20 +1015,6 @@
             }
         }
 
-        // Helper function to update avatar display
-        function updateAvatar(element, user) {
-            element.textContent = '';
-            element.style.backgroundImage = '';
-            element.style.background = '';
-            
-            if (user.Pic) {
-                element.style.backgroundImage = `url(${user.Pic})`;
-            } else {
-                element.style.background = getRandomGradient();
-                element.textContent = user.name.charAt(0).toUpperCase();
-            }
-        }
-
         // Auth button click handler
         authButton.addEventListener('click', async () => {
             const phone = document.getElementById('phone').value.trim();
@@ -1165,9 +1056,8 @@
                     // Save to localStorage for auto-login
                     localStorage.setItem('firechat_user', JSON.stringify({
                         phone,
-                        name,
-                        Pic: profilePic || '',
-                        password: password
+                        name: currentUser.name,
+                        Pic: currentUser.Pic
                     }));
                     
                     showNotification("Account created successfully!");
@@ -1194,8 +1084,7 @@
                     localStorage.setItem('firechat_user', JSON.stringify({
                         phone,
                         name: currentUser.name,
-                        Pic: currentUser.Pic || '',
-                        password: password
+                        Pic: currentUser.Pic
                     }));
                     
                     showNotification("Signed in successfully!");
@@ -1213,19 +1102,25 @@
             }
         });
 
+        // Helper function to update avatar display
+        function updateAvatar(element, user) {
+            element.textContent = '';
+            element.style.backgroundImage = '';
+            element.style.background = '';
+            
+            if (user.Pic) {
+                element.style.backgroundImage = `url(${user.Pic})`;
+            } else {
+                element.style.background = getRandomGradient();
+                element.textContent = user.name.charAt(0).toUpperCase();
+            }
+        }
+
         // Auto-login with saved credentials
         const savedUser = JSON.parse(localStorage.getItem('firechat_user'));
         if (savedUser) {
-            continueAsButton.style.display = 'flex';
+            continueAsButton.style.display = 'block';
             savedUsername.textContent = savedUser.name;
-            
-            // Set avatar for continue as button
-            if (savedUser.Pic) {
-                savedUserAvatar.style.backgroundImage = `url(${savedUser.Pic})`;
-            } else {
-                savedUserAvatar.style.background = getRandomGradient();
-                savedUserAvatar.textContent = savedUser.name.charAt(0).toUpperCase();
-            }
             
             continueAsButton.addEventListener('click', async () => {
                 try {
@@ -1242,7 +1137,7 @@
                     
                     currentUserName.textContent = currentUser.name;
                     
-                    showNotification("Welcome back, " + currentUser.name + "!");
+                    showNotification("Signed in successfully!");
                     authPage.style.display = 'none';
                     chatMenuPage.style.display = 'flex';
                     
@@ -1253,18 +1148,6 @@
                     showNotification("Auto-login failed. Please sign in manually.");
                 }
             });
-        }
-
-        // Helper function for random gradient
-        function getRandomGradient() {
-            const gradients = [
-                'linear-gradient(135deg, #ff9a9e, #fad0c4)',
-                'linear-gradient(135deg, #a1c4fd, #c2e9fb)',
-                'linear-gradient(135deg, #d4fc79, #96e6a1)',
-                'linear-gradient(135deg, #f6d365, #fda085)',
-                'linear-gradient(135deg, #84fab0, #8fd3f4)'
-            ];
-            return gradients[Math.floor(Math.random() * gradients.length)];
         }
 
         // Load user list from Firestore
@@ -1322,6 +1205,18 @@
                 console.error("Error loading user list:", error);
                 showNotification("Failed to load user list.");
             }
+        }
+
+        // Helper function for random gradient
+        function getRandomGradient() {
+            const gradients = [
+                'linear-gradient(135deg, #ff9a9e, #fad0c4)',
+                'linear-gradient(135deg, #a1c4fd, #c2e9fb)',
+                'linear-gradient(135deg, #d4fc79, #96e6a1)',
+                'linear-gradient(135deg, #f6d365, #fda085)',
+                'linear-gradient(135deg, #84fab0, #8fd3f4)'
+            ];
+            return gradients[Math.floor(Math.random() * gradients.length)];
         }
 
         // Start a chat with another user
@@ -1516,46 +1411,6 @@
 
         // Initialize typing indicator
         chatBox.appendChild(typingIndicator);
-        
-        // Simulate loading of user list
-        setTimeout(() => {
-            if (userList) {
-                userList.innerHTML = `
-                    <li>
-                        <div class="user-avatar" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);">S</div>
-                        <div class="user-details">
-                            <h3>Sarah Johnson</h3>
-                            <p>+1 (555) 123-4567</p>
-                        </div>
-                        <div class="user-status">
-                            <div class="online-dot"></div>
-                            <span class="last-seen">Online</span>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="user-avatar" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);">M</div>
-                        <div class="user-details">
-                            <h3>Mike Thompson</h3>
-                            <p>+1 (555) 987-6543</p>
-                        </div>
-                        <div class="user-status">
-                            <span class="last-seen">2h ago</span>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="user-avatar" style="background: linear-gradient(135deg, #d4fc79, #96e6a1);">E</div>
-                        <div class="user-details">
-                            <h3>Emma Davis</h3>
-                            <p>+1 (555) 456-7890</p>
-                        </div>
-                        <div class="user-status">
-                            <div class="online-dot"></div>
-                            <span class="last-seen">Online</span>
-                        </div>
-                    </li>
-                `;
-            }
-        }, 1000);
     </script>
 </body>
 </html>
